@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e7c9b">
+<title>Milk Diary</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef3f6;--card:#fff;--ink:#10243a;--mute:#5f7186;--pri:#0e7c9b;--onpri:#fff;--ok:#d8f1e2;--okink:#146c3a;--miss:#fde2df;--missink:#a1302a;--line:#dbe4ea;--wa:#1faa59;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1a27;--card:#152636;--ink:#e6eef5;--mute:#93a5b7;--pri:#4cc0df;--onpri:#06222d;--ok:#16382a;--okink:#8fe0b0;--miss:#3d1f1e;--missink:#ffb1aa;--line:#233a4e}}
+:root[data-theme="dark"]{--bg:#0d1a27;--card:#152636;--ink:#e6eef5;--mute:#93a5b7;--pri:#4cc0df;--onpri:#06222d;--ok:#16382a;--okink:#8fe0b0;--miss:#3d1f1e;--missink:#ffb1aa;--line:#233a4e}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 "Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:480px;margin:0 auto;padding:14px 14px 40px}
+h1{font-size:22px;margin:0;font-weight:800}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+button{font:inherit;color:inherit;cursor:pointer}
+.icon{background:var(--card);border:1px solid var(--line);border-radius:12px;width:42px;height:42px;font-size:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.nav b{font-size:18px;font-weight:600}
+.nav button{background:var(--card);border:1px solid var(--line);border-radius:12px;width:42px;height:42px;font-size:18px}
+.bill{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.bill small,.row small{color:var(--mute)}
+.total{font-size:38px;font-weight:800;line-height:1}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.stats div{background:var(--bg);border-radius:12px;padding:8px 10px}
+.stats b{display:block;font-size:18px}
+.stats small{color:var(--mute);font-size:12px}
+.paid{display:flex;align-items:center;gap:8px;margin-top:12px;justify-content:space-between}
+.paid input{width:110px;text-align:right}
+.due{font-weight:600}
+input{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 10px;width:100%}
+.cal{padding:0;overflow:hidden}
+.calhead{background:var(--pri);color:var(--onpri);padding:12px;display:flex;align-items:center;justify-content:space-between}
+.calhead b{font-size:21px;font-weight:800}
+.calhead button{background:rgba(255,255,255,.2);border:0;color:inherit;width:38px;height:38px;border-radius:10px;font-size:20px}
+.dow,.grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.dow span{text-align:center;font-size:12px;font-weight:600;color:var(--mute);padding:8px 0;border-bottom:1px solid var(--line)}
+.dow span:first-child{color:var(--missink)}
+.grid{gap:1px;background:var(--line)}
+.cell{height:60px;background:var(--card);border:0;border-radius:0;padding:4px 2px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;position:relative}
+.cell i{font-style:normal;font-size:13px;font-weight:600;width:24px;height:24px;line-height:24px;border-radius:50%;text-align:center}
+.cell.sun i{color:var(--missink)}
+.cell b{font-size:11px;font-weight:600;line-height:1.1;padding:2px 5px;border-radius:6px;min-height:6px}
+.cell.ok{background:var(--card)}.cell.ok b{background:var(--ok);color:var(--okink)}
+.cell.no b{background:var(--miss);color:var(--missink)}
+.cell.today i{background:var(--pri);color:var(--onpri)}
+.cell.blank{background:var(--bg)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.legend{padding:10px 14px;display:flex;gap:14px;font-size:12px;color:var(--mute);margin-top:10px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.btn{border-radius:14px;border:1px solid var(--line);background:var(--card);padding:12px;font-weight:600}
+.btn.pri{background:var(--pri);color:var(--onpri);border-color:transparent}
+.btn.wa{background:var(--wa);color:#fff;border-color:transparent;width:100%;font-size:17px;padding:15px}
+.veil{position:fixed;inset:0;background:rgba(6,16,26,.55);display:none;align-items:flex-end;justify-content:center;z-index:9}
+.veil.on{display:flex}
+.sheet{background:var(--card);width:100%;max-width:480px;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));max-height:90%;overflow:auto}
+.sheet h2{margin:0 0 12px;font-size:19px}
+.chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.chips button{padding:14px 0;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-weight:600;font-size:16px}
+.chips button.x{background:var(--miss);color:var(--missink);border-color:transparent}
+.two{display:flex;gap:8px;margin-bottom:8px}
+label{display:block;font-size:13px;color:var(--mute);margin:10px 0 4px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;display:none;z-index:20}
+</style></head><body>
+<main>
+  <div class="top"><div><h1>🥛 Milk Diary</h1><small id="hello" style="color:var(--mute)"></small></div><button class="icon" id="gear" aria-label="Settings">⚙️</button></div>
+
+  <div class="card">
+    <div class="bill"><div><small>Bill for this month</small><div class="total" id="total"></div></div><small id="rateNote"></small></div>
+    <div class="stats">
+      <div><b id="sL"></b><small>Litres</small></div>
+      <div><b id="sD"></b><small>Delivered</small></div>
+      <div><b id="sM"></b><small>Missed</small></div>
+    </div>
+    <div class="paid"><span>Paid so far</span><input id="paid" type="number" inputmode="decimal" min="0" placeholder="0"></div>
+    <div class="paid"><span>Balance to pay</span><span class="due" id="due"></span></div>
+  </div>
+
+  <div class="card cal">
+    <div class="calhead"><button id="prev" aria-label="Previous month">‹</button><b id="mlabel"></b><button id="next" aria-label="Next month">›</button></div>
+    <div class="dow"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+    <div class="grid" id="grid"></div>
+    <div class="legend"><span>🟩 Delivered</span><span>🟥 Absent</span><span>🔒 Marked days are locked</span></div>
+  </div>
+
+  <div class="actions">
+    <button class="btn pri" id="today">Mark today delivered</button>
+    <button class="btn" id="fill">Fill unmarked days</button>
+  </div>
+  <button class="btn wa" id="share">Share bill on WhatsApp</button>
+</main>
+
+<div class="veil" id="veil"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const DEF={name:'',milk:'',ph:'',rate:60,def:1,cur:'₹'};
+let D={s:{...DEF},e:{},p:{},t:0};
+const norm=j=>({s:{...DEF,...(j.s||{})},e:j.e||{},p:j.p||{},t:j.t||0});
+try{const r=localStorage.getItem('milkdiary.v1');if(r)D=norm(JSON.parse(r))}catch(x){}
+/* Storage algorithm: every save is written to BOTH IndexedDB and localStorage with a timestamp.
+   On start, the newest copy wins, so if one store is wiped the other restores it. */
+const idb=()=>new Promise((res,rej)=>{const q=indexedDB.open('milkdiary',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});
+async function idbSet(v){const db=await idb();return new Promise((res,rej)=>{const t=db.transaction('kv','readwrite');t.objectStore('kv').put(v,'data');t.oncomplete=res;t.onerror=()=>rej(t.error)})}
+async function idbGet(){const db=await idb();return new Promise((res,rej)=>{const r=db.transaction('kv').objectStore('kv').get('data');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+const save=()=>{D.t=Date.now();const j=JSON.stringify(D);try{localStorage.setItem('milkdiary.v1',j)}catch(x){}try{idbSet(j).catch(()=>{})}catch(x){}};
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(x){}
+(async()=>{try{const r=await idbGet();if(r){const j=norm(JSON.parse(r));if(j.t>D.t){D=j;render()}}}catch(x){}})();
+const now=new Date();let Y=now.getFullYear(),M=now.getMonth();
+const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const key=(d)=>`${Y}-${String(M+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+const mkey=()=>`${Y}-${String(M+1).padStart(2,'0')}`;
+const nd=()=>new Date(Y,M+1,0).getDate();
+const n2=v=>+(+v).toFixed(2);
+const money=v=>D.s.cur+n2(v).toLocaleString('en-IN');
+const isToday=d=>Y===now.getFullYear()&&M===now.getMonth()&&d===now.getDate();
+function sure(b,txt){if(b.dataset.arm)return true;b.dataset.arm=1;const o=b.textContent;b.textContent=txt;setTimeout(()=>{b.dataset.arm='';b.textContent=o},3000);return false}
+function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',1800)}
+
+function stats(){let L=0,dl=0,ms=0;for(let d=1;d<=nd();d++){const q=D.e[key(d)];if(q===undefined)continue;if(q>0){L+=q;dl++}else ms++}
+  const bill=L*D.s.rate;const paid=+D.p[mkey()]||0;return{L,dl,ms,bill,paid,due:bill-paid}}
+
+function render(){
+  $('#mlabel').textContent=MN[M]+' '+Y;
+  const s=stats();
+  $('#total').textContent=money(s.bill);
+  $('#rateNote').textContent=money(D.s.rate)+' per litre';
+  $('#sL').textContent=n2(s.L);$('#sD').textContent=s.dl;$('#sM').textContent=s.ms;
+  $('#paid').value=s.paid||'';
+  $('#due').textContent=s.due>=0?money(s.due):money(-s.due)+' advance';
+  const tk=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0'),tq=D.e[tk],tb=$('#today');
+  tb.disabled=tq!==undefined;tb.textContent=tq===undefined?'Mark today delivered':(tq>0?'Today: '+n2(tq)+' L ✓':'Today: not delivered');
+  $('#hello').textContent=D.s.name?'Hello, '+D.s.name:'Daily milk delivery record';
+  const first=new Date(Y,M,1).getDay();let h='';
+  const blank='<div class="cell blank"></div>';
+  for(let i=0;i<first;i++)h+=blank;
+  for(let d=1;d<=nd();d++){const q=D.e[key(d)];
+    const c=(q===undefined?'':q>0?' ok':' no')+(isToday(d)?' today':'')+((first+d-1)%7===0?' sun':'');
+    h+=`<button class="cell${c}" data-d="${d}" aria-label="${d} ${MN[M]}"><i>${d}</i><b>${q===undefined?'':q>0?n2(q)+' L':'Absent'}</b></button>`}
+  for(let i=first+nd();i%7;i++)h+=blank;
+  $('#grid').innerHTML=h;
+}
+
+function open(html){$('#sheet').innerHTML=html;$('#veil').classList.add('on')}
+function close(){$('#veil').classList.remove('on')}
+$('#veil').addEventListener('click',e=>{if(e.target.id==='veil')close()});
+
+function setQ(d,q){if(q!==null&&D.e[key(d)]!==undefined)return;if(q===null)delete D.e[key(d)];else D.e[key(d)]=q;save();render();close()}
+function dayFmt(d){return new Date(Y,M,d).toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'})}
+function openDay(d){
+  const cur=D.e[key(d)];
+  if(cur!==undefined){
+    open(`<h2>${dayFmt(d)}</h2>
+    <div class="card" style="background:var(--${cur>0?'ok':'miss'});color:var(--${cur>0?'okink':'missink'});border:0">
+      <b style="font-size:20px">${cur>0?'Delivered: '+n2(cur)+' L':'Not delivered'}</b>
+      ${cur>0?'<div>Amount: '+money(cur*D.s.rate)+'</div>':''}</div>
+    <p style="color:var(--mute);margin:0 0 12px">🔒 This day is locked. Clear the entry to mark it again.</p>
+    <button class="btn" id="clr" style="width:100%;color:var(--missink)">Clear this entry</button>`);
+    $('#sheet').onclick=null;
+    $('#clr').onclick=()=>{if(sure($('#clr'),'Tap again to clear'))setQ(d,null)};
+    return}
+  open(`<h2>${dayFmt(d)}</h2><div class="chips">
+    <button class="x" data-q="0">Not delivered</button>
+    ${[0.5,1,1.5,2,3].map(q=>`<button data-q="${q}">${q} L</button>`).join('')}</div>
+    <label>Other quantity (litres)</label>
+    <div class="two"><input id="cq" type="number" inputmode="decimal" step="0.25" min="0" placeholder="e.g. 2.25"><button class="btn pri" id="cqs">Save</button></div>`);
+  $('#sheet').onclick=e=>{const b=e.target.closest('[data-q]');if(b)setQ(d,+b.dataset.q)};
+  $('#cqs').onclick=()=>{const v=parseFloat($('#cq').value);if(isNaN(v)||v<0)return toast('Enter a valid quantity');setQ(d,v)};
+}
+$('#grid').addEventListener('click',e=>{const b=e.target.closest('[data-d]');if(b)openDay(+b.dataset.d)});
+
+function openSettings(){const s=D.s;
+  open(`<h2>Settings</h2>
+   <label>Your name</label><input id="f-name" value="${esc(s.name)}" placeholder="Customer name">
+   <label>Milkman name</label><input id="f-milk" value="${esc(s.milk)}" placeholder="Milkman name">
+   <label>Milkman's WhatsApp number (with country code, optional)</label><input id="f-ph" type="tel" inputmode="tel" value="${esc(s.ph)}" placeholder="919876543210">
+   <div class="two"><div style="flex:1"><label>Price per litre</label><input id="f-rate" type="number" inputmode="decimal" value="${s.rate}"></div>
+   <div style="flex:1"><label>Usual daily quantity (L)</label><input id="f-def" type="number" inputmode="decimal" step="0.25" value="${s.def}"></div>
+   <div style="flex:.6"><label>Currency</label><input id="f-cur" value="${esc(s.cur)}" maxlength="3"></div></div>
+   <button class="btn pri" id="sv" style="width:100%;margin-top:14px">Save settings</button>
+   <label style="margin-top:18px">Backup &amp; restore (data is stored on this device only)</label>
+   <textarea id="bk" rows="3" placeholder="Backup text appears here. Paste a backup here to restore." style="width:100%;font:12px monospace;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px"></textarea>
+   <div class="two" style="margin-top:8px"><button class="btn" id="bkm" style="flex:1">Create backup</button><button class="btn" id="bkw" style="flex:1">Send on WhatsApp</button></div>
+   <button class="btn" id="bkr" style="width:100%">Restore from pasted backup</button>
+   <button class="btn" id="rst" style="width:100%;margin-top:8px;color:var(--missink)">Erase all records</button>`);
+  $('#sheet').onclick=null;
+  $('#sv').onclick=()=>{D.s={name:$('#f-name').value.trim(),milk:$('#f-milk').value.trim(),ph:$('#f-ph').value.replace(/\D/g,''),
+    rate:Math.max(0,parseFloat($('#f-rate').value)||0),def:Math.max(0,parseFloat($('#f-def').value)||1),cur:$('#f-cur').value||'₹'};
+    save();render();close();toast('Settings saved')};
+  const mk=()=>{const t=JSON.stringify({s:D.s,e:D.e,p:D.p});$('#bk').value=t;return t};
+  $('#bkm').onclick=async()=>{const t=mk();try{await navigator.clipboard.writeText(t);toast('Backup copied')}catch(x){$('#bk').select();toast('Select and copy the text')}};
+  $('#bkw').onclick=()=>{const u='https://wa.me/?text='+encodeURIComponent('Milk Diary backup:\n'+mk());const w=window.open(u,'_blank');if(!w)location.href=u};
+  $('#bkr').onclick=()=>{try{let t=$('#bk').value.trim();t=t.slice(t.indexOf('{'));const j=JSON.parse(t);if(typeof j.e!=='object'||j.e===null)throw 0;
+    if(!sure($('#bkr'),'Tap again to replace records'))return;D=norm(j);save();render();close();toast('Backup restored')}catch(x){toast('That is not a valid backup')}};
+  $('#rst').onclick=()=>{if(sure($('#rst'),'Tap again to erase everything')){D.e={};D.p={};save();render();close()}};
+}
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+$('#gear').onclick=openSettings;
+$('#prev').onclick=()=>{M--;if(M<0){M=11;Y--}render()};
+$('#next').onclick=()=>{M++;if(M>11){M=0;Y++}render()};
+$('#paid').oninput=e=>{D.p[mkey()]=parseFloat(e.target.value)||0;save();const s=stats();$('#due').textContent=s.due>=0?money(s.due):money(-s.due)+' advance'};
+$('#today').onclick=()=>{if(Y!==now.getFullYear()||M!==now.getMonth()){Y=now.getFullYear();M=now.getMonth()}D.e[key(now.getDate())]=D.s.def;save();render();toast('Today marked: '+D.s.def+' L')};
+$('#fill').onclick=()=>{const last=(Y===now.getFullYear()&&M===now.getMonth())?now.getDate():(new Date(Y,M,1)<now?nd():0);let c=0;
+  for(let d=1;d<=last;d++)if(D.e[key(d)]===undefined){D.e[key(d)]=D.s.def;c++}
+  save();render();toast(c?c+' days filled with '+D.s.def+' L':'No unmarked days to fill')};
+
+$('#share').onclick=()=>{
+  const s=stats(),c=D.s.cur,lines=[];
+  lines.push(`🥛 *Milk Bill – ${MN[M]} ${Y}*`);
+  if(D.s.name)lines.push(`Customer: ${D.s.name}`);
+  if(D.s.milk)lines.push(`Milkman: ${D.s.milk}`);
+  lines.push(`Rate: ${c}${n2(D.s.rate)} per litre`,'','*Daily record*');
+  let any=false;
+  for(let d=1;d<=nd();d++){const q=D.e[key(d)];if(q===undefined)continue;any=true;
+    const dt=new Date(Y,M,d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',weekday:'short'});
+    lines.push(q>0?`${dt}: ${n2(q)} L = ${c}${n2(q*D.s.rate)}`:`${dt}: No delivery`)}
+  if(!any)return toast('Mark some days first');
+  lines.push('',`Delivered days: ${s.dl}`,`Missed days: ${s.ms}`,`Total milk: ${n2(s.L)} L`,`*Total bill: ${c}${n2(s.bill)}*`);
+  if(s.paid)lines.push(`Paid: ${c}${n2(s.paid)}`,`*Balance: ${c}${n2(s.due)}*`);
+  const url=`https://wa.me/${D.s.ph||''}?text=${encodeURIComponent(lines.join('\n'))}`;
+  const w=window.open(url,'_blank');if(!w)location.href=url;
+};
+render();
+</script>
+</body></html>
